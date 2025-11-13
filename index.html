@@ -48,6 +48,9 @@
                     <a href="#" onclick="renderHomepage()" class="inline-flex items-center px-1 pt-1 border-b-2 border-indigo-500 text-sm font-medium text-gray-900">
                         Find Talent
                     </a>
+                    <a href="#" onclick="renderGigBoard()" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">
+                        Gig Board
+                    </a>
                     <a href="#" onclick="showGigModal(true)" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">
                         Post a Gig
                     </a>
@@ -93,6 +96,7 @@
         <div class="sm:hidden hidden" id="mobile-menu">
             <div class="pt-2 pb-3 space-y-1">
                 <a href="#" onclick="renderHomepage(); toggleMobileMenu();" class="block pl-3 pr-4 py-2 border-l-4 border-indigo-500 text-base font-medium text-indigo-700 bg-indigo-50">Find Talent</a>
+                <a href="#" onclick="renderGigBoard(); toggleMobileMenu();" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800">Gig Board</a>
                 <a href="#" onclick="showGigModal(true); toggleMobileMenu();" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800">Post a Gig</a>
             </div>
             <div class="pt-4 pb-3 border-t border-gray-200">
@@ -258,17 +262,28 @@
             signInWithPopup, 
             signOut 
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { 
+            getFirestore, 
+            collection, 
+            addDoc, 
+            getDocs, 
+            query, 
+            setLogLevel, 
+            Timestamp 
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // --- FIREBASE SETUP ---
         // These global variables are provided by the environment (e.g., Canvas)
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
         const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+        setLogLevel('debug'); // Enable Firestore logging
         const googleProvider = new GoogleAuthProvider();
         
         let currentUser = null; // Store current user state
+        let userId = null; // Store user ID
 
         // --- DATABASE ---
         // In a real app, this data would come from a database like Firestore.
@@ -550,6 +565,89 @@
             appContent.innerHTML = profileHtml;
         }
 
+        /**
+         * Renders the Gig Board page
+         */
+        async function renderGigBoard() {
+            // Clear current content and scroll to top
+            appContent.innerHTML = '';
+            window.scrollTo(0, 0);
+
+            const headerHtml = `
+                <div class="text-center py-12">
+                    <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight">
+                        Open Gigs
+                    </h1>
+                    <p class="mt-4 text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
+                        Browse the latest projects posted by clients.
+                    </p>
+                </div>
+            `;
+            
+            const loadingHtml = `
+                <div id="gig-list-container" class="mt-8 space-y-6">
+                    <p class="text-center text-gray-500">Loading gigs...</p>
+                </div>
+            `;
+            
+            appContent.innerHTML = headerHtml + loadingHtml;
+            
+            const gigListContainer = document.getElementById('gig-list-container');
+            
+            try {
+                // Gigs are public, so we use the public path
+                const gigCollectionPath = \`/artifacts/${appId}/public/data/gigs\`;
+                const q = query(collection(db, gigCollectionPath));
+                const querySnapshot = await getDocs(q);
+                
+                if (querySnapshot.empty) {
+                    gigListContainer.innerHTML = '<p class="text-center text-gray-500">No open gigs found. Post one!</p>';
+                    return;
+                }
+                
+                let gigsHtml = '';
+                querySnapshot.forEach((doc) => {
+                    const gig = doc.data();
+                    const eventDate = gig.eventDate ? new Date(gig.eventDate).toLocaleDateString() : 'N/A';
+                    gigsHtml += `
+                        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                            <div class="p-6">
+                                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start">
+                                    <div>
+                                        <span class="inline-block bg-indigo-100 text-indigo-800 text-sm font-medium px-3 py-1 rounded-full mb-2">${gig.category || 'Other'}</span>
+                                        <h3 class="text-2xl font-semibold text-gray-900 hover:text-indigo-600">${gig.title}</h3>
+                                    </div>
+                                    <div class="mt-3 sm:mt-0 sm:text-right flex-shrink-0">
+                                        <p class="text-xl font-bold text-gray-900">$${gig.budget || 'N/A'}</p>
+                                        <p class="text-sm text-gray-500">Posted by ${gig.clientEmail.split('@')[0]}...</p>
+                                    </div>
+                                </div>
+                                <p class="mt-4 text-gray-600">${gig.description}</p>
+                                <div class="mt-6 pt-4 border-t border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                                    <div class="flex items-center text-sm text-gray-500">
+                                        <svg class="w-5 h-5 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                        ${gig.location || 'N/A'}
+                                    </div>
+                                    <div class="flex items-center text-sm text-gray-500">
+                                        <svg class="w-5 h-5 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                        Event Date: ${eventDate}
+                                    </div>
+                                    <button class="w-full sm:w-auto px-6 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg shadow-sm hover:bg-indigo-700">
+                                        Send Quote
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                gigListContainer.innerHTML = gigsHtml;
+
+            } catch (error) {
+                console.error("Error fetching gigs: ", error);
+                gigListContainer.innerHTML = '<p class="text-center text-red-500">Could not load gigs. Please try again later.</p>';
+            }
+        }
+
 
         // --- AUTH & UI FUNCTIONS ---
 
@@ -646,6 +744,12 @@
         window.signInWithGoogle = signInWithGoogle;
         window.signOutUser = signOutUser;
         window.hideMessage = hideMessage;
+        window.showGigModal = showGigModal;
+        window.handleModalClick = handleModalClick;
+        window.renderHomepage = renderHomepage;
+        window.renderGigBoard = renderGigBoard;
+        window.showProfilePage = showProfilePage;
+        window.toggleMobileMenu = toggleMobileMenu;
 
 
         // --- AUTH LISTENER ---
@@ -654,10 +758,12 @@
             currentUser = user;
             if (user) {
                 // User is signed in (or anonymous)
-                console.log("Auth state changed:", user.uid, user.isAnonymous);
+                userId = user.uid; // Set the global userId
+                console.log("Auth state changed:", userId, user.isAnonymous);
                 updateUIAfterAuth(user);
             } else {
                 // User is signed out
+                userId = null; // Clear the userId
                 console.log("Auth state changed: No user");
                 updateUIAfterAuth(null);
             }
@@ -689,16 +795,52 @@
         /**
          * Handle gig form submission
          */
-        gigForm.addEventListener('submit', (e) => {
+        gigForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            // In a real app, you would send this data to your server/database
-            const title = document.getElementById('gig-title').value;
-            console.log('Submitting gig:', title);
+
+            // 1. Check if user is logged in (not anonymous)
+            if (!currentUser || currentUser.isAnonymous) {
+                showMessage("Authentication Required", "Please sign in with Google to post a gig.", true);
+                return;
+            }
+
+            // 2. Get data from form
+            const gigData = {
+                title: document.getElementById('gig-title').value,
+                category: document.getElementById('gig-category').value,
+                location: document.getElementById('gig-location').value,
+                eventDate: document.getElementById('gig-date').value,
+                budget: document.getElementById('gig-budget').value,
+                description: document.getElementById('gig-description').value,
+                clientEmail: document.getElementById('gig-email').value,
+                clientId: userId, // Store the ID of the user who posted
+                postedAt: Timestamp.now() // Add a server timestamp
+            };
             
-            // Show a success message using the new modal
-            showGigModal(false);
-            gigForm.reset();
-            showMessage("Gig Posted!", "Your gig has been posted! Vetted professionals will contact you soon.");
+            console.log('Submitting gig:', gigData);
+
+            try {
+                // 3. Save to Firestore (public collection)
+                // This path is accessible by all users (for videographers to see)
+                const gigCollectionPath = \`/artifacts/${appId}/public/data/gigs\`;
+                const docRef = await addDoc(collection(db, gigCollectionPath), gigData);
+                
+                console.log("Gig posted with ID: ", docRef.id);
+                
+                // 4. Show success
+                showGigModal(false);
+                gigForm.reset();
+                showMessage("Gig Posted!", "Your gig has been posted! Vetted professionals will contact you soon.");
+                
+                // 5. Refresh the gig board if we are on it
+                if (appContent.querySelector('h1')?.textContent.includes("Open Gigs")) {
+                    renderGigBoard();
+                }
+
+            } catch (error) {
+                console.error("Error adding gig to Firestore: ", error);
+                showMessage("Submission Failed", "Could not save your gig. Please try again.", true);
+            }
         });
 
         /**
