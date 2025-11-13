@@ -54,13 +54,22 @@
                 </div>
                 
                 <!-- Desktop Buttons -->
-                <div class="hidden sm:ml-6 sm:flex sm:items-center space-x-2">
-                    <button class="px-4 py-2 text-sm font-medium text-gray-600 bg-white rounded-lg hover:bg-gray-50">
-                        Log In
-                    </button>
-                    <button class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 shadow-sm">
-                        Sign Up
-                    </button>
+                <div class="hidden sm:ml-6 sm:flex sm:items-center space-x-4">
+                    <!-- This container will show "Sign In" when logged out -->
+                    <div id="user-auth-desktop">
+                        <button id="sign-in-button" onclick="signInWithGoogle()" class="flex items-center justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white rounded-lg hover:bg-gray-100 border border-gray-300 shadow-sm">
+                            <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48px" height="48px"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.223,0-9.64-3.657-11.303-8.66l-6.571,4.82C9.043,39.645,15.961,44,24,44z"/><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.089,5.571l6.19,5.238C39.999,36.452,44,30.836,44,24C44,22.659,43.862,21.35,43.611,20.083z"/></svg>
+                            Sign In with Google
+                        </button>
+                    </div>
+                    <!-- This container will show user info when logged in -->
+                    <div id="user-info-desktop" class="hidden items-center space-x-3">
+                        <span id="user-name-desktop" class="text-sm font-medium text-gray-700"></span>
+                        <img id="user-img-desktop" class="w-9 h-9 rounded-full" src="" alt="User profile picture">
+                        <button id="sign-out-button" onclick="signOutUser()" class="px-3 py-1.5 text-sm font-medium text-gray-600 bg-white rounded-lg hover:bg-gray-50 border border-gray-200">
+                            Log Out
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Mobile Menu Button (Hamburger) -->
@@ -87,13 +96,25 @@
                 <a href="#" onclick="showGigModal(true); toggleMobileMenu();" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800">Post a Gig</a>
             </div>
             <div class="pt-4 pb-3 border-t border-gray-200">
+                <!-- Mobile Auth Buttons -->
                 <div class="flex flex-col space-y-2 px-2">
-                    <button class="w-full text-left px-3 py-2 text-base font-medium text-gray-600 bg-white rounded-lg hover:bg-gray-50">
-                        Log In
-                    </button>
-                    <button class="w-full text-left px-3 py-2 text-base font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 shadow-sm">
-                        Sign Up
-                    </button>
+                    <!-- This container will show "Sign In" when logged out -->
+                    <div id="user-auth-mobile">
+                        <button id="sign-in-button-mobile" onclick="signInWithGoogle()" class="w-full flex items-center justify-center px-4 py-2 text-base font-medium text-gray-700 bg-white rounded-lg hover:bg-gray-100 border border-gray-300 shadow-sm">
+                            <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48px" height="48px"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.223,0-9.64-3.657-11.303-8.66l-6.571,4.82C9.043,39.645,15.961,44,24,44z"/><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.089,5.571l6.19,5.238C39.999,36.452,44,30.836,44,24C44,22.659,43.862,21.35,43.611,20.083z"/></svg>
+                            Sign In with Google
+                        </button>
+                    </div>
+                    <!-- This container will show user info when logged in -->
+                    <div id="user-info-mobile" class="hidden">
+                        <div class="flex items-center px-3 py-2">
+                            <img id="user-img-mobile" class="w-9 h-9 rounded-full mr-3" src="" alt="User profile picture">
+                            <span id="user-name-mobile" class="text-base font-medium text-gray-800"></span>
+                        </div>
+                        <button id="sign-out-button-mobile" onclick="signOutUser(); toggleMobileMenu();" class="mt-2 w-full text-left px-3 py-2 text-base font-medium text-gray-600 bg-white rounded-lg hover:bg-gray-50 border border-gray-200">
+                            Log Out
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -200,8 +221,55 @@
     </div>
 
 
+    <!-- Message Modal (for Success/Error) -->
+    <div id="message-modal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 z-[70] hidden" onclick="hideMessage()">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md transform transition-all" onclick="event.stopPropagation()">
+            <!-- Modal Header -->
+            <div class="flex justify-between items-center p-5 border-b border-gray-200">
+                <h3 id="message-title" class="text-xl font-semibold text-gray-900">Message</h3>
+                <button onclick="hideMessage()" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <!-- Modal Body -->
+            <div class="p-6">
+                <p id="message-text" class="text-gray-600">This is the message content.</p>
+            </div>
+            <!-- Modal Footer -->
+            <div class="p-4 bg-gray-50 border-t border-gray-200 rounded-b-2xl text-right">
+                <button onclick="hideMessage()" id="message-ok-button" class="px-5 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700">
+                    OK
+                </button>
+            </div>
+        </div>
+    </div>
+
+
     <!-- JavaScript -->
-    <script>
+    <script type="module">
+        // --- FIREBASE SDK IMPORTS ---
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { 
+            getAuth, 
+            signInWithCustomToken, 
+            signInAnonymously, 
+            onAuthStateChanged, 
+            GoogleAuthProvider, 
+            signInWithPopup, 
+            signOut 
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- FIREBASE SETUP ---
+        // These global variables are provided by the environment (e.g., Canvas)
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const googleProvider = new GoogleAuthProvider();
+        
+        let currentUser = null; // Store current user state
+
         // --- DATABASE ---
         // In a real app, this data would come from a database like Firestore.
         const videographers = [
@@ -301,6 +369,23 @@
         const appContent = document.getElementById('app-content');
         const gigModal = document.getElementById('gig-modal');
         const gigForm = document.getElementById('gig-form');
+
+        // Auth UI Elements
+        const userAuthDesktop = document.getElementById('user-auth-desktop');
+        const userInfoDesktop = document.getElementById('user-info-desktop');
+        const userNameDesktop = document.getElementById('user-name-desktop');
+        const userImgDesktop = document.getElementById('user-img-desktop');
+        
+        const userAuthMobile = document.getElementById('user-auth-mobile');
+        const userInfoMobile = document.getElementById('user-info-mobile');
+        const userNameMobile = document.getElementById('user-name-mobile');
+        const userImgMobile = document.getElementById('user-img-mobile');
+
+        // Message Modal Elements
+        const messageModal = document.getElementById('message-modal');
+        const messageTitle = document.getElementById('message-title');
+        const messageText = document.getElementById('message-text');
+        const messageOkButton = document.getElementById('message-ok-button');
 
         // --- PAGE RENDERING ---
 
@@ -466,6 +551,119 @@
         }
 
 
+        // --- AUTH & UI FUNCTIONS ---
+
+        /**
+         * Initiates Google Sign-In popup
+         */
+        async function signInWithGoogle() {
+            try {
+                // This will trigger the onAuthStateChanged listener
+                await signInWithPopup(auth, googleProvider);
+            } catch (error) {
+                console.error("Error during Google sign-in:", error);
+                showMessage("Sign-In Failed", "Could not sign in with Google. Please try again.", true);
+            }
+        }
+
+        /**
+         * Signs the current user out
+         */
+        async function signOutUser() {
+            try {
+                // This will trigger the onAuthStateChanged listener
+                await signOut(auth);
+            } catch (error) {
+                console.error("Error signing out:", error);
+                showMessage("Sign-Out Failed", "An error occurred while signing out. Please try again.", true);
+            }
+        }
+
+        /**
+         * Updates the nav bar UI based on auth state
+         */
+        function updateUIAfterAuth(user) {
+            if (user && !user.isAnonymous) {
+                // --- User is logged in with Google ---
+                const displayName = user.displayName || 'User';
+                const photoURL = user.photoURL || `https://placehold.co/40x40/d1d5db/374151?text=${displayName.charAt(0)}`;
+
+                // Desktop UI
+                userAuthDesktop.classList.add('hidden');
+                userInfoDesktop.classList.remove('hidden');
+                userInfoDesktop.classList.add('flex'); // Make sure it's flex
+                userNameDesktop.textContent = displayName;
+                userImgDesktop.src = photoURL;
+
+                // Mobile UI
+                userAuthMobile.classList.add('hidden');
+                userInfoMobile.classList.remove('hidden');
+                userNameMobile.textContent = displayName;
+                userImgMobile.src = photoURL;
+
+            } else {
+                // --- User is logged out or anonymous ---
+                // Desktop UI
+                userAuthDesktop.classList.remove('hidden');
+                userInfoDesktop.classList.add('hidden');
+                userInfoDesktop.classList.remove('flex');
+
+                // Mobile UI
+                userAuthMobile.classList.remove('hidden');
+                userInfoMobile.classList.add('hidden');
+            }
+        }
+
+        /**
+         * Shows the message modal (for success or error)
+         */
+        function showMessage(title, text, isError = false) {
+            messageTitle.textContent = title;
+            messageText.textContent = text;
+            
+            // Change button color for error
+            if (isError) {
+                messageTitle.classList.add('text-red-600');
+                messageOkButton.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
+                messageOkButton.classList.add('bg-red-600', 'hover:bg-red-700');
+            } else {
+                messageTitle.classList.remove('text-red-600');
+                messageOkButton.classList.remove('bg-red-600', 'hover:bg-red-700');
+                messageOkButton.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
+            }
+            
+            messageModal.classList.remove('hidden');
+        }
+
+        /**
+         * Hides the message modal
+         */
+        function hideMessage() {
+            messageModal.classList.add('hidden');
+        }
+
+        // Make functions globally accessible for onclick attributes
+        window.signInWithGoogle = signInWithGoogle;
+        window.signOutUser = signOutUser;
+        window.hideMessage = hideMessage;
+
+
+        // --- AUTH LISTENER ---
+        // This runs whenever the user's sign-in state changes
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+            if (user) {
+                // User is signed in (or anonymous)
+                console.log("Auth state changed:", user.uid, user.isAnonymous);
+                updateUIAfterAuth(user);
+            } else {
+                // User is signed out
+                console.log("Auth state changed: No user");
+                updateUIAfterAuth(null);
+            }
+        });
+
+
         // --- MODAL & MENU CONTROLS ---
 
         /**
@@ -497,13 +695,10 @@
             const title = document.getElementById('gig-title').value;
             console.log('Submitting gig:', title);
             
-            // Show a simple success message (replace with a proper toast notification)
+            // Show a success message using the new modal
             showGigModal(false);
             gigForm.reset();
-            // This is a temporary way to show success. A real app would use a toast.
-            setTimeout(() => {
-                alert('Your gig has been posted! Vetted professionals will contact you soon.');
-            }, 500);
+            showMessage("Gig Posted!", "Your gig has been posted! Vetted professionals will contact you soon.");
         });
 
         /**
@@ -522,8 +717,29 @@
         }
 
         // --- INITIAL LOAD ---
-        // Load the homepage by default when the script runs
-        document.addEventListener('DOMContentLoaded', renderHomepage);
+        // We need to initialize auth first, which will then call renderHomepage
+        async function initializeAppAuth() {
+            try {
+                // __initial_auth_token is provided by the Canvas environment
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    console.log("Signing in with custom token...");
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    // Fallback for local development or if token is missing
+                    console.log("Signing in anonymously...");
+                    await signInAnonymously(auth);
+                }
+            } catch (error) {
+                console.error("Error during initial auth:", error);
+                showMessage("Initialization Error", "Could not initialize the app. Please refresh the page.", true);
+            }
+            // onAuthStateChanged will have already run and updated the UI
+            // Now we can safely render the main page content
+            renderHomepage();
+        }
+        
+        // Load the homepage and auth logic by default when the script runs
+        document.addEventListener('DOMContentLoaded', initializeAppAuth);
 
     </script>
 </body>
